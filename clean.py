@@ -116,9 +116,9 @@ def main() -> None:
     logging.info('Saving output file.')
     output_path = Path(output_file)
     if output_path.suffix == '.csv.gz':
-        books_df.to_csv(output_path, index=False, compression="gzip")
+        clean_df.to_csv(output_path, index=False, compression="gzip")
     else:
-        books_df.to_csv(output_path, index=False)
+        clean_df.to_csv(output_path, index=False)
     
     return None
 
