@@ -59,9 +59,24 @@ def build_genre_column(df: pd.DataFrame) -> pd.DataFrame:
         return df
 
 
-# TODO: define a function to create the audience column here
-def build_audience_column():
-    pass
+def build_audience_column(df: pd.DataFrame) -> pd.DataFrame:
+    """Creates a new column in the DataFrame called Audience that is based on \
+        the ItemCollection column.
+    @param df - the original DataFrame
+    @return a DataFrame with a new column added
+    """
+    json_path = Path('data/audience.json')
+    with open(json_path,'r') as f:
+        audience_data = json.load(f)
+        audience_conditions = [
+            (df['ItemCollection'].isin(audience_data['Adult'])),
+            (df['ItemCollection'].isin(audience_data['Teen'])),
+            (df['ItemCollection'].isin(audience_data['Children'])),
+            (df['ItemCollection'].isin(audience_data['Unknown']))
+        ]
+        audience_values = ['Adult', 'Teen', 'Children', 'Unknown']
+        df['Audience'] = np.select(audience_conditions, audience_values)
+        return df
 
 
 def main() -> None:
@@ -82,19 +97,20 @@ def main() -> None:
     logging.info('Validating columns in input file.')
     validate_columns(books_df)
 
-    # 1. TODO: Remove unneeded columns (ISBN, ReportDate)
+    logging.info('Step 1: Removing unneeded columns.')
+    clean_df = books_df.drop(['ISBN','ReportDate'], axis=1)
 
+    logging.info('Step 2: Removing records with empty and invalid PuublicationYear or ItemCollection.')
+    clean_df.dropna(subset=['ItemCollection'], inplace=True)
+    clean_df = clean_df[clean_df['PublicationYear'] != 0]
+    clean_df = clean_df[clean_df['PublicationYear'] != 9999]
 
+    logging.info('Step 3: Updating incorrect values.')
+    clean_df.replace(to_replace="2109", value="2019", inplace=True)
 
-    # 2. TODO: Remove records with empty and invalid PuublicationYear or ItemCollection.
-
-
-
-    # 3. TODO: Update incorrect values (PublicationYear 2109 -> 2019)
-
-
-
-    # 4. TODO: Add genre and audience columns
+    logging.info('Step 4: adding genre and audience columns.')
+    clean_df = build_genre_column(clean_df)
+    clean_df = build_audience_column(clean_df)
     
  
     logging.info('Saving output file.')
