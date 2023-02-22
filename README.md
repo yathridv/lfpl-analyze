@@ -23,9 +23,10 @@ NB: All commands are linux-specific and may need to be altered for your OS.
 
 ## Challenges
 
-Answer the following questions:
+Answer the following questions to complete the analysis:
 
 - How much was spent on the collection for YA? 
+- How many books are in the collection for YA?
 - How does YA spending compare to other collections?
 - Did the spending on YA change over time?
 - Is YA more or less popular at any of the locations?
